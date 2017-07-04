@@ -72,7 +72,7 @@ summarise(flights,
           avg_arr_delay = mean(arr_delay, na.rm = TRUE))
 
 by_month = group_by(flights, year, month)
-summarise(by_year,
+summarise(by_month,
           monthly_avg_dep_delay = mean(dep_delay,na.rm=TRUE))
 
 
@@ -81,3 +81,13 @@ summarise(by_year,
 # We want to explore relationship between 
 # distance and avg delay for each location
 
+by_dest = group_by(flights, dest)
+delay = summarise(by_dest,
+                  count = n(),
+                  dist = mean(distance, na.rm=TRUE),
+                  delay = mean(arr_delay, na.rm=TRUE))
+delay = filter(delay, count > 20, dest != "HNL")
+
+ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)
